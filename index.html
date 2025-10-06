@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Lista do Vôlei</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>Vôlei Itamaraty</h1>
+  </header>
+
+  <main>
+    <section class="list-section">
+      <h2>Lista principal</h2>
+      <div class="add-player">
+        <input type="text" id="mainPlayerName" placeholder="Nome do Jogador" />
+        <button id="addMainPlayerBtn">Adicionar</button>
+      </div>
+      <ul id="mainPlayersList" class="player-list"></ul>
+    </section>
+
+    <section class="list-section">
+      <h2>Suplentes</h2>
+      <div class="add-player">
+        <input type="text" id="suplentesPlayerName" placeholder="Nome do Suplente" />
+        <button id="addSuplentesPlayerBtn">Adicionar</button>
+      </div>
+      <ul id="suplentesPlayersList" class="player-list"></ul>
+    </section>
+
+    <section class="list-section">
+      <h2>Convidados</h2>
+      <div class="add-player">
+        <input type="text" id="convidadosPlayerName" placeholder="Nome do Convidado" />
+        <button id="addConvidadosPlayerBtn">Adicionar</button>
+      </div>
+      <ul id="convidadosPlayersList" class="player-list"></ul>
+    </section>
+  </main>
+<!-- Firebase App (core) -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+
+<!-- Firebase Database -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+<!-- Firebase Analytics -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics-compat.js"></script>
+
+<!-- Agora o seu script -->
+<script src="script.js"></script>
+</body>
+</html>
