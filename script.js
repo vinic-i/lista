@@ -160,6 +160,7 @@ document.addEventListener("DOMContentLoaded", () => {
       console.error("Erro ao remover jogador:", error);
       alert("Ocorreu um erro ao remover o jogador. Tente novamente.");
     }
+    checkAndPromotePlayers();
   };
 
   const checkAddButtonStatus = () => {
@@ -217,48 +218,44 @@ document.addEventListener("DOMContentLoaded", () => {
   const checkAndPromotePlayers = async () => {
     console.log("Verificando posição de jogadores...");
     const now = new Date();
-    const hour = now.getHours();
-    const minute = now.getMinutes();
 
-    if (hour >= 14 && minute >= 0) {
-      try {
-        const snapshot = await db.collection("players").get();
-        const allPlayers = [];
-        snapshot.forEach((doc) => {
-          allPlayers.push({ id: doc.id, ...doc.data() });
-        });
+    try {
+      const snapshot = await db.collection("players").get();
+      const allPlayers = [];
+      snapshot.forEach((doc) => {
+        allPlayers.push({ id: doc.id, ...doc.data() });
+      });
 
-        const mainList = allPlayers.filter((p) => p.listType === "main");
-        const suplentesList = allPlayers.filter(
-          (p) => p.listType === "suplentes"
-        );
-        const convidadosList = allPlayers.filter(
-          (p) => p.listType === "convidados"
-        );
+      const mainList = allPlayers.filter((p) => p.listType === "main");
+      const suplentesList = allPlayers.filter(
+        (p) => p.listType === "suplentes"
+      );
+      const convidadosList = allPlayers.filter(
+        (p) => p.listType === "convidados"
+      );
 
-        const availableSpots = MAX_MAIN_PLAYERS - mainList.length;
-        if (availableSpots <= 0) {
-          console.log("Lista principal cheia.");
-          return;
-        }
-
-        const waitingList = [...suplentesList, ...convidadosList].sort(
-          (a, b) => a.timestamp - b.timestamp
-        );
-
-        const toPromote = waitingList.slice(0, availableSpots);
-        const batch = db.batch();
-
-        toPromote.forEach((player) => {
-          const docRef = db.collection("players").doc(player.id);
-          batch.update(docRef, { listType: "main" });
-        });
-
-        await batch.commit();
-        console.log("Promoção concluída.");
-      } catch (error) {
-        console.error("Erro ao promover jogadores:", error);
+      const availableSpots = MAX_MAIN_PLAYERS - mainList.length;
+      if (availableSpots <= 0) {
+        console.log("Lista principal cheia.");
+        return;
       }
+
+      const waitingList = [...suplentesList, ...convidadosList].sort(
+        (a, b) => a.timestamp - b.timestamp
+      );
+
+      const toPromote = waitingList.slice(0, availableSpots);
+      const batch = db.batch();
+
+      toPromote.forEach((player) => {
+        const docRef = db.collection("players").doc(player.id);
+        batch.update(docRef, { listType: "main" });
+      });
+
+      await batch.commit();
+      console.log("Promoção concluída.");
+    } catch (error) {
+      console.error("Erro ao promover jogadores:", error);
     }
   };
 
@@ -308,7 +305,7 @@ document.addEventListener("DOMContentLoaded", () => {
   renderListFromFirestore("suplentes", suplentesPlayersList, false);
   renderListFromFirestore("convidados", convidadosPlayersList, false);
 
-  setInterval(checkAndPromotePlayers, 60000); // verifica a cada minuto
+  // setInterval(checkAndPromotePlayers, 60000); // verifica a cada minuto
 
   const sendListToPortariaBtn = document.getElementById(
     "sendListToPortariaBtn"
