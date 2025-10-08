@@ -1,6 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const LIBERADO_PARA_ASSINAR = false;
-
   const firebaseConfig = {
     apiKey: "AIzaSyBYipyAgyqGMBQltJgikxgFtki2A1p0qWY",
     authDomain: "lista-2b1cd.firebaseapp.com",
@@ -34,56 +32,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const convidadosPlayersList = document.getElementById(
     "convidadosPlayersList"
   );
-
-  const toggleAccess = (isEnabled) => {
-    const inputs = [
-      mainPlayerInput,
-      suplentesPlayerInput,
-      convidadosPlayerInput,
-    ];
-
-    const buttons = [
-      addMainPlayerBtn,
-      addSuplentesPlayerBtn,
-      addConvidadosPlayerBtn,
-      sendListToPortariaBtn,
-    ];
-
-    inputs.forEach((input) => (input.disabled = !isEnabled));
-    buttons.forEach((btn) => (btn.disabled = !isEnabled));
-
-    if (!isEnabled) {
-      document.body.style.filter = "grayscale(100%)";
-      const msg = document.createElement("div");
-      msg.id = "bloqueio-msg";
-      msg.textContent = "⏳ O acesso será liberado às 10h. Aguarde...";
-      msg.style.cssText =
-        "position:fixed;top:0;left:0;width:100%;background:#ff9800;color:#fff;text-align:center;padding:10px;font-weight:bold;z-index:9999;";
-      document.body.appendChild(msg);
-    } else {
-      document.body.style.filter = "none";
-      const msg = document.getElementById("bloqueio-msg");
-      if (msg) msg.remove();
-    }
-  };
-
-  // 🔐 Bloqueia ou libera com base na variável
-  toggleAccess(LIBERADO_PARA_ASSINAR);
-
-  // ⏰ Exemplo: libera automaticamente às 10h
-  const agora = new Date();
-  const horarioLiberacao = new Date();
-  horarioLiberacao.setHours(9, 0, 0, 0); // 10:00
-
-  if (agora >= horarioLiberacao) {
-    toggleAccess(true);
-  } else {
-    const tempoRestante = horarioLiberacao - agora;
-    setTimeout(() => {
-      toggleAccess(true);
-      console.log("✅ Acesso liberado automaticamente às 10h");
-    }, tempoRestante);
-  }
 
   const getUserId = () => {
     let userId = localStorage.getItem("userId");
