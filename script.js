@@ -226,6 +226,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const checkAndPromotePlayers = async () => {
     console.log("Verificando posição de jogadores...");
     const now = new Date();
+    const hour = now.getHours();
+    const minute = now.getMinutes();
 
     try {
       const snapshot = await db.collection("players").get();
@@ -248,9 +250,17 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      const waitingList = [...suplentesList, ...convidadosList].sort(
-        (a, b) => a.timestamp - b.timestamp
-      );
+      let waitingList = [];
+
+      if (hour >= 14 && minute >= 0) {
+        waitingList = [...suplentesList, ...convidadosList].sort(
+          (a, b) => a.timestamp - b.timestamp
+        );
+      } else {
+        waitingList = [...suplentesList].sort(
+          (a, b) => a.timestamp - b.timestamp
+        );
+      }
 
       const toPromote = waitingList.slice(0, availableSpots);
       const batch = db.batch();
