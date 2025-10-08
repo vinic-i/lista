@@ -1,4 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
+  const LIBERADO_PARA_ASSINAR = false;
+
   const firebaseConfig = {
     apiKey: "AIzaSyBYipyAgyqGMBQltJgikxgFtki2A1p0qWY",
     authDomain: "lista-2b1cd.firebaseapp.com",
@@ -32,6 +34,56 @@ document.addEventListener("DOMContentLoaded", () => {
   const convidadosPlayersList = document.getElementById(
     "convidadosPlayersList"
   );
+
+  const toggleAccess = (isEnabled) => {
+    const inputs = [
+      mainPlayerInput,
+      suplentesPlayerInput,
+      convidadosPlayerInput,
+    ];
+
+    const buttons = [
+      addMainPlayerBtn,
+      addSuplentesPlayerBtn,
+      addConvidadosPlayerBtn,
+      sendListToPortariaBtn,
+    ];
+
+    inputs.forEach((input) => (input.disabled = !isEnabled));
+    buttons.forEach((btn) => (btn.disabled = !isEnabled));
+
+    if (!isEnabled) {
+      document.body.style.filter = "grayscale(100%)";
+      const msg = document.createElement("div");
+      msg.id = "bloqueio-msg";
+      msg.textContent = "⏳ O acesso será liberado às 10h. Aguarde...";
+      msg.style.cssText =
+        "position:fixed;top:0;left:0;width:100%;background:#ff9800;color:#fff;text-align:center;padding:10px;font-weight:bold;z-index:9999;";
+      document.body.appendChild(msg);
+    } else {
+      document.body.style.filter = "none";
+      const msg = document.getElementById("bloqueio-msg");
+      if (msg) msg.remove();
+    }
+  };
+
+  // 🔐 Bloqueia ou libera com base na variável
+  toggleAccess(LIBERADO_PARA_ASSINAR);
+
+  // ⏰ Exemplo: libera automaticamente às 10h
+  const agora = new Date();
+  const horarioLiberacao = new Date();
+  horarioLiberacao.setHours(9, 0, 0, 0); // 10:00
+
+  if (agora >= horarioLiberacao) {
+    toggleAccess(true);
+  } else {
+    const tempoRestante = horarioLiberacao - agora;
+    setTimeout(() => {
+      toggleAccess(true);
+      console.log("✅ Acesso liberado automaticamente às 10h");
+    }, tempoRestante);
+  }
 
   const getUserId = () => {
     let userId = localStorage.getItem("userId");
@@ -309,4 +361,38 @@ document.addEventListener("DOMContentLoaded", () => {
   renderListFromFirestore("convidados", convidadosPlayersList, false);
 
   setInterval(checkAndPromotePlayers, 60000); // verifica a cada minuto
+
+  const sendListToPortariaBtn = document.getElementById(
+    "sendListToPortariaBtn"
+  );
+
+  sendListToPortariaBtn.addEventListener("click", async () => {
+    try {
+      const snapshot = await db
+        .collection("players")
+        .where("listType", "==", "main")
+        .get();
+
+      if (snapshot.empty) {
+        alert("A lista principal está vazia!");
+        return;
+      }
+
+      // ordena os jogadores pela ordem de cadastro
+      const players = snapshot.docs
+        .map((doc) => doc.data())
+        .sort((a, b) => a.timestamp - b.timestamp)
+        .map((data, index) => `${index + 1} - ${data.name}`);
+
+      const message = `Segue a lista do vôlei:\n${players.join("\n")}`;
+
+      // copia para a área de transferência
+      await navigator.clipboard.writeText(message);
+
+      alert("✅ Lista copiada com sucesso! Cole no WhatsApp ou onde quiser.");
+    } catch (error) {
+      console.error("Erro ao copiar a lista:", error);
+      alert("Não foi possível copiar a lista. Tente novamente.");
+    }
+  });
 });

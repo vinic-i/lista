@@ -26,6 +26,22 @@ main {
     gap: 20px;
 }
 
+.send-btn {
+  margin-top: 10px;
+  padding: 8px 16px;
+  background-color: rgb(6, 6, 207); /* cor do WhatsApp */
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s;
+}
+
+.send-btn:hover {
+  background-color: rgb(49, 49, 207);
+}
+
 .list-section {
     border: 1px solid #ccc;
     padding: 15px;
