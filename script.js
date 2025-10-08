@@ -87,13 +87,21 @@ document.addEventListener("DOMContentLoaded", () => {
       : player.name;
     li.appendChild(nameSpan);
 
-    if (!isMainList && player.timestamp) {
+    if (player.timestamp) {
       const timeSpan = document.createElement("span");
       const date = new Date(player.timestamp);
-      timeSpan.textContent = ` (às ${date.toLocaleTimeString("pt-BR", {
+      const timeText = date.toLocaleTimeString("pt-BR", {
         hour: "2-digit",
         minute: "2-digit",
-      })})`;
+      });
+
+      // Formata o texto dependendo da lista
+      if (isMainList) {
+        timeSpan.textContent = ` (entrou às ${timeText})`;
+      } else {
+        timeSpan.textContent = ` (às ${timeText})`;
+      }
+
       timeSpan.classList.add("timestamp");
       li.appendChild(timeSpan);
     }
